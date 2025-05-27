@@ -99,7 +99,6 @@ const Submit = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#282c34",
       }}
     >
       <form
