@@ -1,0 +1,13 @@
+#home{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 95px);
+    padding: 20px 10%;
+}
+
+#home .presentation h1{
+    position: relative;
+    width: 150%;
+}
