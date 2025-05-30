@@ -113,13 +113,13 @@ const Result = () => {
           </div>
         </div>
         {/* Signatures Section */}
-        <div style={{ marginTop: 40, background: "#282c34", borderRadius: 12, padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}>
-          <h2 style={{ color: "#54F4FC", marginTop: 0 }}>Signatures</h2>
+        <div style={{ marginTop: 40, background: "#282c34", borderRadius: 12, padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.12)", maxHeight: 320, overflowY: 'auto', border: '1px solid #222' }}>
+          <h2 style={{ color: "#54F4FC", marginTop: 0, marginBottom: 16, letterSpacing: 1 }}>Signatures</h2>
           {signatures && signatures.length > 0 ? (
             <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
               {signatures.map((sig, idx) => (
-                <li key={idx} style={{ marginBottom: 18, padding: 12, borderRadius: 8, background: "#1a232b", borderLeft: `4px solid ${sig.severity >= 3 ? '#e53935' : sig.severity === 2 ? '#ffc107' : '#4caf50'}` }}>
-                  <div style={{ fontWeight: 600, fontSize: 17 }}>{sig.name}</div>
+                <li key={idx} style={{ marginBottom: 18, padding: 14, borderRadius: 8, background: "#1a232b", borderLeft: `4px solid ${sig.severity >= 3 ? '#e53935' : sig.severity === 2 ? '#ffc107' : '#4caf50'}`, boxShadow: '0 1px 4px rgba(0,0,0,0.10)' }}>
+                  <div style={{ fontWeight: 600, fontSize: 17, color: '#fff' }}>{sig.name}</div>
                   <div style={{ fontSize: 15, color: "#b0eaff", marginBottom: 4 }}>{sig.description}</div>
                   <span style={{ color: sig.severity >= 3 ? '#e53935' : sig.severity === 2 ? '#ffc107' : '#4caf50', fontWeight: 500 }}>
                     Severity: {sig.severity}
@@ -134,12 +134,12 @@ const Result = () => {
           <>
             {/* Detections */}
             {detections && detections.length > 0 && (
-              <div style={{ marginTop: 40, background: "#282c34", borderRadius: 12, padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}>
-                <h2 style={{ color: "#54F4FC", marginTop: 0 }}>Detections</h2>
+              <div style={{ marginTop: 40, background: "#282c34", borderRadius: 12, padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.12)", maxHeight: 320, overflowY: 'auto', border: '1px solid #222' }}>
+                <h2 style={{ color: "#54F4FC", marginTop: 0, marginBottom: 16, letterSpacing: 1 }}>Detections</h2>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                   {detections.map((det, idx) => (
-                    <li key={idx} style={{ marginBottom: 18, padding: 12, borderRadius: 8, background: "#1a232b" }}>
-                      <div style={{ fontWeight: 600, fontSize: 17 }}>Family: {det.family}</div>
+                    <li key={idx} style={{ marginBottom: 18, padding: 14, borderRadius: 8, background: "#1a232b", boxShadow: '0 1px 4px rgba(0,0,0,0.10)' }}>
+                      <div style={{ fontWeight: 600, fontSize: 17, color: '#fff' }}>Family: {det.family}</div>
                       {det.details && det.details.length > 0 && (
                         <ul style={{ fontSize: 15, color: "#b0eaff", margin: 0, paddingLeft: 16 }}>
                           {det.details.map((detail, didx) => (
@@ -154,12 +154,12 @@ const Result = () => {
             )}
             {/* Detections2pid */}
             {detections2pid && Object.keys(detections2pid).length > 0 && (
-              <div style={{ marginTop: 40, background: "#282c34", borderRadius: 12, padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}>
-                <h2 style={{ color: "#54F4FC", marginTop: 0 }}>Detections by PID</h2>
+              <div style={{ marginTop: 40, background: "#282c34", borderRadius: 12, padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.12)", border: '1px solid #222' }}>
+                <h2 style={{ color: "#54F4FC", marginTop: 0, marginBottom: 16, letterSpacing: 1 }}>Detections by PID</h2>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                   {Object.entries(detections2pid).map(([pid, families]) => (
-                    <li key={pid} style={{ marginBottom: 12 }}>
-                      <b>PID {pid}:</b> {families.join(", ")}
+                    <li key={pid} style={{ marginBottom: 12, color: '#b0eaff' }}>
+                      <b style={{ color: '#fff' }}>PID {pid}:</b> {families.join(", ")}
                     </li>
                   ))}
                 </ul>
@@ -167,21 +167,21 @@ const Result = () => {
             )}
             {/* Dropped Files */}
             {dropped && dropped.length > 0 && (
-              <div style={{ marginTop: 40, background: "#282c34", borderRadius: 12, padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.12)" }}>
-                <h2 style={{ color: "#54F4FC", marginTop: 0 }}>Dropped Files</h2>
+              <div style={{ marginTop: 40, background: "#282c34", borderRadius: 12, padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.12)", maxHeight: 320, overflowY: 'auto', border: '1px solid #222' }}>
+                <h2 style={{ color: "#54F4FC", marginTop: 0, marginBottom: 16, letterSpacing: 1 }}>Dropped Files</h2>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                   {dropped.map((drop, idx) => (
-                    <li key={idx} style={{ marginBottom: 18, padding: 12, borderRadius: 8, background: "#1a232b" }}>
-                      <div><b>Name:</b> {Array.isArray(drop.name) ? drop.name.join(", ") : drop.name}</div>
-                      <div><b>Path:</b> <span style={{ wordBreak: "break-all" }}>{drop.path}</span></div>
-                      <div><b>Size:</b> {drop.size} bytes</div>
-                      <div><b>MD5:</b> {drop.md5}</div>
-                      <div><b>SHA1:</b> {drop.sha1}</div>
-                      <div><b>SHA256:</b> {drop.sha256}</div>
+                    <li key={idx} style={{ marginBottom: 18, padding: 14, borderRadius: 8, background: "#1a232b", boxShadow: '0 1px 4px rgba(0,0,0,0.10)' }}>
+                      <div><b style={{ color: '#fff' }}>Name:</b> {Array.isArray(drop.name) ? drop.name.join(", ") : drop.name}</div>
+                      <div><b style={{ color: '#fff' }}>Path:</b> <span style={{ wordBreak: "break-all", color: '#b0eaff' }}>{drop.path}</span></div>
+                      <div><b style={{ color: '#fff' }}>Size:</b> {drop.size} bytes</div>
+                      <div><b style={{ color: '#fff' }}>MD5:</b> {drop.md5}</div>
+                      <div><b style={{ color: '#fff' }}>SHA1:</b> {drop.sha1}</div>
+                      <div><b style={{ color: '#fff' }}>SHA256:</b> {drop.sha256}</div>
                       {drop.guest_paths && drop.guest_paths.length > 0 && (
-                        <div><b>Guest Paths:</b> {drop.guest_paths.join(", ")}</div>
+                        <div><b style={{ color: '#fff' }}>Guest Paths:</b> {drop.guest_paths.join(", ")}</div>
                       )}
-                      {drop.type && <div><b>Type:</b> {drop.type}</div>}
+                      {drop.type && <div><b style={{ color: '#fff' }}>Type:</b> {drop.type}</div>}
                     </li>
                   ))}
                 </ul>
