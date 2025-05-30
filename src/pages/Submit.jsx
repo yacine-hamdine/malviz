@@ -54,7 +54,7 @@ const Submit = () => {
     });
 
     try {
-      const response = await fetch("http://127.0.0.1:8001/apiv2/tasks/create/static/", {
+      const response = await fetch("http://127.0.0.1:8000/apiv2/tasks/create/static/", {
         method: "POST",
         body: formData,
       });
@@ -65,7 +65,7 @@ const Submit = () => {
         // Poll status endpoint
         const pollStatus = async () => {
           try {
-            const statusResp = await fetch(`http://127.0.0.1:8001/apiv2/tasks/status/${taskId}`);
+            const statusResp = await fetch(`http://127.0.0.1:8000/apiv2/tasks/status/${taskId}`);
             const statusResult = await statusResp.json();
             if (statusResult.data === "reported" || statusResult.status === "completed") {
               setLoading(false);

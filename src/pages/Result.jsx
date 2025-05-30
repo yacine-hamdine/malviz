@@ -26,7 +26,7 @@ const Result = () => {
     const fetchReport = async () => {
       setLoading(true);
       try {
-        const resp = await fetch(`http://127.0.0.1:8001/apiv2/tasks/get/report/${id}`);
+        const resp = await fetch(`http://127.0.0.1:8000/apiv2/tasks/get/report/${id}`);
         const data = await resp.json();
         setReport(data);
       } catch (err) {
