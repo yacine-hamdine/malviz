@@ -171,7 +171,7 @@ const Submit = () => {
         onDragEnter={handleDrag}
         onSubmit={handleSubmit}
         style={{
-          border: "2px dashed #54F4FC",
+          border: loading ? "2px solid #54F4FC" : "2px dashed #54F4FC",
           borderRadius: 8,
           padding: 32,
           background: dragActive ? "#22313a" : "#282c34",
@@ -180,13 +180,16 @@ const Submit = () => {
           minWidth: 400,
           minHeight: 300,
           color: "#fff",
-          boxShadow: "0 4px 24px rgba(0,0,0,0.2)",
+          boxShadow: loading
+            ? "0 0 24px 8px #54F4FC, 0 0 40px 8px #54F4FC, 0 4px 24px rgba(0,0,0,0.2)"
+            : "0 4px 24px rgba(0,0,0,0.2)",
           width: 500,
           height: 400,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          transition: 'box-shadow 0.3s, border 0.3s',
         }}
       >
         {/* Hide input and drag area when loading */}
@@ -261,14 +264,37 @@ const Submit = () => {
         )}
         {loading && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%", height: "100%" }}>
-            <div className="spinner" style={{ marginBottom: 24 }}>
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="24" cy="24" r="20" stroke="#54F4FC" strokeWidth="4" strokeDasharray="31.4 31.4" strokeLinecap="round">
-                  <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" from="0 24 24" to="360 24 24" />
-                </circle>
-              </svg>
+            {/* Dots animation when dynamicProgress >= 100 and not done */}
+            {dynamicProgress >= 100 && !dynamicDone ? (
+              <div style={{ marginBottom: 24, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ display: 'inline-block', fontSize: 40, color: '#54F4FC', letterSpacing: 2 }}>
+                  <span className="dot1">.</span><span className="dot2">.</span><span className="dot3">.</span>
+                </span>
+                <style>{`
+                  .dot1, .dot2, .dot3 {
+                    opacity: 0.2;
+                    animation: blink 1.4s infinite both;
+                  }
+                  .dot2 { animation-delay: 0.2s; }
+                  .dot3 { animation-delay: 0.4s; }
+                  @keyframes blink {
+                    0%, 80%, 100% { opacity: 0.2; }
+                    40% { opacity: 1; }
+                  }
+                `}</style>
+              </div>
+            ) : (
+              <div className="spinner" style={{ marginBottom: 24 }}>
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="24" cy="24" r="20" stroke="#54F4FC" strokeWidth="4" strokeDasharray="31.4 31.4" strokeLinecap="round">
+                    <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" from="0 24 24" to="360 24 24" />
+                  </circle>
+                </svg>
+              </div>
+            )}
+            <div style={{ color: "#54F4FC", fontSize: 20, marginBottom: 24 }}>
+              {dynamicProgress >= 100 && !dynamicDone ? "Processing reports..." : "Analyzing file, please wait..."}
             </div>
-            <div style={{ color: "#54F4FC", fontSize: 20, marginBottom: 24 }}>Analyzing file, please wait...</div>
             {/* Progress bars */}
             <div style={{ width: 320, marginBottom: 16 }}>
               <div style={{ marginBottom: 6, color: '#fff' }}>Static Analysis <span style={{ float: 'right', color: staticDone ? '#4caf50' : '#54F4FC' }}>{staticDone ? 'Done' : `${Math.round(staticProgress)}%`}</span></div>
