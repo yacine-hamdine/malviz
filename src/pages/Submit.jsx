@@ -7,6 +7,12 @@ const Submit = () => {
   const [files, setFiles] = useState([]);
   const [dragActive, setDragActive] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [staticProgress, setStaticProgress] = useState(0);
+  const [dynamicProgress, setDynamicProgress] = useState(0);
+  const [staticDone, setStaticDone] = useState(false);
+  const [dynamicDone, setDynamicDone] = useState(false);
+  const [staticTaskId, setStaticTaskId] = useState(null);
+  const [dynamicTaskId, setDynamicTaskId] = useState(null);
   const inputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -47,45 +53,105 @@ const Submit = () => {
     e.preventDefault();
     if (files.length === 0) return;
     setLoading(true);
+    setStaticProgress(0);
+    setDynamicProgress(0);
+    setStaticDone(false);
+    setDynamicDone(false);
+    setStaticTaskId(null);
+    setDynamicTaskId(null);
 
     const formData = new FormData();
     files.forEach((file) => {
       formData.append("file", file);
     });
 
-    try {
-      const response = await fetch("http://127.0.0.1:8000/apiv2/tasks/create/static/", {
-        method: "POST",
-        body: formData,
-      });
+    // Helper for progress bar
+    let staticStart = Date.now();
+    let dynamicStart = Date.now();
+    let staticInterval, dynamicInterval;
 
-      if (response.ok) {
+    // --- Static Analysis ---
+    const staticPromise = fetch("http://127.0.0.1:8000/apiv2/tasks/create/static/", {
+      method: "POST",
+      body: formData,
+    })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Static analysis failed");
         let ID = await response.json();
         let taskId = ID.data.task_ids[0];
-        // Poll status endpoint
-        const pollStatus = async () => {
-          try {
-            const statusResp = await fetch(`http://127.0.0.1:8000/apiv2/tasks/status/${taskId}`);
-            const statusResult = await statusResp.json();
-            if (statusResult.data === "reported" || statusResult.status === "completed") {
-              setLoading(false);
-              navigate(`/result?id=${taskId}`);
-            } else {
-              setTimeout(pollStatus, 1000);
+        setStaticTaskId(taskId);
+        // Progress bar simulation (30s)
+        staticInterval = setInterval(() => {
+          let elapsed = (Date.now() - staticStart) / 1000;
+          setStaticProgress(Math.min(100, (elapsed / 30) * 100));
+        }, 500);
+        // Poll status
+        return new Promise((resolve) => {
+          const poll = async () => {
+            try {
+              const statusResp = await fetch(`http://127.0.0.1:8000/apiv2/tasks/status/${taskId}`);
+              const statusResult = await statusResp.json();
+              if (statusResult.data === "reported" || statusResult.status === "completed" || statusResult.status === "finished") {
+                setStaticDone(true);
+                setStaticProgress(100);
+                clearInterval(staticInterval);
+                resolve(taskId);
+              } else {
+                setTimeout(poll, 1000);
+              }
+            } catch {
+              setTimeout(poll, 1000);
             }
-          } catch (err) {
-            setTimeout(pollStatus, 1000);
-          }
-        };
-        pollStatus();
-      } else {
-        setLoading(false);
-        alert("Failed to upload file(s).");
-      }
-    } catch (error) {
+          };
+          poll();
+        });
+      });
+
+    // --- Dynamic Analysis ---
+    const dynamicPromise = fetch("http://127.0.0.1:8000/apiv2/tasks/create/file/", {
+      method: "POST",
+      body: formData,
+    })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Dynamic analysis failed");
+        let ID = await response.json();
+        let taskId = ID.data.task_ids[0];
+        setDynamicTaskId(taskId);
+        // Progress bar simulation (3-5min, use 4min avg)
+        dynamicInterval = setInterval(() => {
+          let elapsed = (Date.now() - dynamicStart) / 1000;
+          setDynamicProgress(Math.min(100, (elapsed / 240) * 100));
+        }, 500);
+        // Poll status
+        return new Promise((resolve) => {
+          const poll = async () => {
+            try {
+              const statusResp = await fetch(`http://127.0.0.1:8000/apiv2/tasks/status/${taskId}`);
+              const statusResult = await statusResp.json();
+              if (statusResult.data === "reported" || statusResult.status === "completed" || statusResult.status === "finished") {
+                setDynamicDone(true);
+                setDynamicProgress(100);
+                clearInterval(dynamicInterval);
+                resolve(taskId);
+              } else {
+                setTimeout(poll, 2000);
+              }
+            } catch {
+              setTimeout(poll, 2000);
+            }
+          };
+          poll();
+        });
+      });
+
+    // Wait for both to finish, then navigate
+    Promise.all([staticPromise, dynamicPromise]).then(([staticId, dynamicId]) => {
       setLoading(false);
-      alert("An error occurred while uploading.");
-    }
+      navigate(`/result?id=${staticId}&dynamicId=${dynamicId}`);
+    }).catch(() => {
+      setLoading(false);
+      alert("Failed to upload or analyze file(s).");
+    });
   };
 
   return (
@@ -202,7 +268,20 @@ const Submit = () => {
                 </circle>
               </svg>
             </div>
-            <div style={{ color: "#54F4FC", fontSize: 20 }}>Analyzing file, please wait...</div>
+            <div style={{ color: "#54F4FC", fontSize: 20, marginBottom: 24 }}>Analyzing file, please wait...</div>
+            {/* Progress bars */}
+            <div style={{ width: 320, marginBottom: 16 }}>
+              <div style={{ marginBottom: 6, color: '#fff' }}>Static Analysis <span style={{ float: 'right', color: staticDone ? '#4caf50' : '#54F4FC' }}>{staticDone ? 'Done' : `${Math.round(staticProgress)}%`}</span></div>
+              <div style={{ background: '#222', borderRadius: 6, height: 14, overflow: 'hidden' }}>
+                <div style={{ width: `${staticProgress}%`, height: '100%', background: staticDone ? '#4caf50' : '#54F4FC', transition: 'width 0.3s' }} />
+              </div>
+            </div>
+            <div style={{ width: 320 }}>
+              <div style={{ marginBottom: 6, color: '#fff' }}>Dynamic Analysis <span style={{ float: 'right', color: dynamicDone ? '#4caf50' : '#54F4FC' }}>{dynamicDone ? 'Done' : `${Math.round(dynamicProgress)}%`}</span></div>
+              <div style={{ background: '#222', borderRadius: 6, height: 14, overflow: 'hidden' }}>
+                <div style={{ width: `${dynamicProgress}%`, height: '100%', background: dynamicDone ? '#4caf50' : '#54F4FC', transition: 'width 0.3s' }} />
+              </div>
+            </div>
           </div>
         )}
       </form>
