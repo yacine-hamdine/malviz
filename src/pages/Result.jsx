@@ -41,6 +41,7 @@ const Result = () => {
         const resp = await fetch(`http://127.0.0.1:8000/apiv2/tasks/get/report/${dynamicId}`);
         const data = await resp.json();
         setDynamicReport(data);
+        console.log("Dynamic report data:", data);
       } catch (err) {
         setDynamicReport({ error: "Failed to fetch dynamic report." });
       }
