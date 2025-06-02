@@ -195,9 +195,67 @@ const Result = () => {
   };
 
   return (
-    <div style={{ background: "#000000", minHeight: "100vh", color: "#fff", padding: 32, fontFamily: 'Inter, Arial, sans-serif' }}>
-      {renderReport(staticReport, "Static Analysis Report")}
-      {dynamicId && renderReport(dynamicReport, "Dynamic Analysis Report", true)}
+    <div
+      style={{
+        background: "#000000",
+        minHeight: "100vh",
+        color: "#fff",
+        padding: 32,
+        fontFamily: 'Inter, Arial, sans-serif',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 32,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      {/* Top row: static and AI reports side by side */}
+      <div style={{ display: 'flex', flexDirection: 'row', gap: 32, width: '100%', justifyContent: 'center' }}>
+        <div style={{ flex: 1, width: '100%' }}>
+          {renderReport(staticReport, "Static Analysis Report")}
+        </div>
+        <div style={{
+          flex: 1,
+          maxWidth: 480,
+          background: '#282c34',
+          borderRadius: 16,
+          minHeight: 240,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+          border: '1px solid #222',
+          padding: 24,
+          margin: "26px 0",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18, justifyContent: 'center', width: '100%' }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="#54F4FC" strokeWidth="2" fill="#181c20" />
+              <path d="M8 12h8M12 8v8" stroke="#54F4FC" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            <h2 style={{ color: '#54F4FC', margin: 0, fontSize: 22, letterSpacing: 1 }}>AI Analyses Report</h2>
+          </div>
+          <div style={{ color: '#b0eaff', fontSize: 17, textAlign: 'center', marginTop: 12, marginBottom: 8, minHeight: 40 }}>
+            {/* Placeholder for future AI results */}
+            <span style={{ opacity: 0.7 }}>
+              Coming soon: AI-powered insights and recommendations will appear here.
+            </span>
+          </div>
+          <div style={{ width: '100%', marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+            <div style={{ background: '#222', borderRadius: 8, padding: '10px 18px', color: '#54F4FC', fontWeight: 600, fontSize: 15, letterSpacing: 1, opacity: 0.8 }}>
+              <span role="img" aria-label="ai">🤖</span> AI Engine
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Bottom row: dynamic report full width */}
+      {dynamicId && (
+        <div style={{ width: '100%' }}>
+          {renderReport(dynamicReport, "Dynamic Analysis Report", true)}
+        </div>
+      )}
     </div>
   );
 };
